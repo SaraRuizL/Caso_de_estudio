@@ -1,0 +1,30 @@
+body{
+    background-color: beige;
+}
+
+.banner {
+    background-color: #353536;
+    padding: 1rem;
+    height: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.h4{
+    color: aliceblue;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 10px;
+}
+.song-card {
+    transition: transform 0.2s;
+}
+.song-card:hover {
+    transform: scale(1.02);
+}
+.card-img-top {
+    height: 150px;
+    object-fit: cover;
+}
