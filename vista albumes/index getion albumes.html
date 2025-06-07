@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gestión de Álbumes y Canciones</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/estilos.css">
+  <style>
+    .album-cover { max-width: 150px; }
+    .editando input { width: auto; margin-right: 10px; }
+  </style>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand" href="#"> <img src="./img/logo.png" alt="" height="100px">Melomanos.net -🎵 Mis Álbumes</a>
+  </nav>
+
+  <div class="container py-5">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h4 class="card-title">Agregar Álbum</h4>
+        <form id="form-album" class="row g-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="titulo-album" placeholder="Título del álbum" required>
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" id="anio-album" placeholder="Año" required>
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" id="medio-album" placeholder="Medio" required>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="artistas-album" placeholder="Artistas" required>
+          </div>
+          <div class="col-md-8">
+            <input type="text" class="form-control" id="descripcion-album" placeholder="Descripción" required>
+          </div>
+          <div class="col-md-4">
+            <input type="file" class="form-control" id="imagen-album" accept="image/*">
+          </div>
+          <div class="col-md-12 d-grid">
+            <button type="submit" class="btn btn-success">Agregar Álbum</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="contenedor-albumes" class="row gy-4"></div>
+  </div>
+
+  <script>
+    const formAlbum = document.getElementById('form-album');
+    const contenedor = document.getElementById('contenedor-albumes');
+
+    formAlbum.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const titulo = document.getElementById('titulo-album').value.trim();
+      const anio = document.getElementById('anio-album').value.trim();
+      const medio = document.getElementById('medio-album').value.trim();
+      const artistas = document.getElementById('artistas-album').value.trim();
+      const descripcion = document.getElementById('descripcion-album').value.trim();
+      const imagen = document.getElementById('imagen-album').files[0];
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        crearAlbum(titulo, anio, medio, artistas, descripcion, e.target.result);
+      };
+
+      if (imagen) {
+        reader.readAsDataURL(imagen);
+      } else {
+        crearAlbum(titulo, anio, medio, artistas, descripcion, 'https://via.placeholder.com/150x150.png?text=Portada');
+      }
+
+      formAlbum.reset();
+    });
+
+    function crearAlbum(titulo, anio, medio, artistas, descripcion, portada) {
+      const col = document.createElement('div');
+      col.className = 'col-md-6';
+
+      col.innerHTML = `
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-start">
+              <img src="${portada}" class="img-thumbnail album-cover me-3" alt="Portada">
+              <div class="album-info">
+                <h5>${titulo}</h5>
+                <p><strong>Año:</strong> ${anio} | <strong>Medio:</strong> ${medio}</p>
+                <p><strong>Artistas:</strong> ${artistas}</p>
+                <p><strong>Descripción:</strong> ${descripcion}</p>
+              </div>
+            </div>
+            <div class="mt-2 d-flex justify-content-end gap-2">
+              <button class="btn btn-warning btn-sm btn-editar-album">Editar Álbum</button>
+              <button class="btn btn-danger btn-sm btn-eliminar-album">Eliminar Álbum</button>
+            </div>
+            <hr>
+            <form class="form-cancion row g-2 mt-2">
+              <div class="col-md-4">
+                <input type="text" class="form-control titulo" placeholder="Título" required>
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control interprete" placeholder="Intérprete" required>
+              </div>
+              <div class="col-md-3">
+                <input type="text" class="form-control duracion" placeholder="Duración" required>
+              </div>
+              <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">+ Canción</button>
+              </div>
+            </form>
+            <ul class="list-group mt-3 canciones"></ul>
+          </div>
+        </div>
+      `;
+
+      const formCancion = col.querySelector('.form-cancion');
+      const listaCanciones = col.querySelector('.canciones');
+      const info = col.querySelector('.album-info');
+      const btnEditarAlbum = col.querySelector('.btn-editar-album');
+      const btnEliminarAlbum = col.querySelector('.btn-eliminar-album');
+
+      btnEliminarAlbum.addEventListener('click', () => {
+        col.remove();
+      });
+
+      btnEditarAlbum.addEventListener('click', () => {
+        if (!info.classList.contains('editando')) {
+          const h5 = info.querySelector('h5');
+          const p = info.querySelectorAll('p');
+          const [anioVal, medioVal] = p[0].textContent.replace('Año:', '').replace('Medio:', '').split('|').map(x => x.trim());
+          const artistasVal = p[1].textContent.replace('Artistas:', '').trim();
+          const descripcionVal = p[2].textContent.replace('Descripción:', '').trim();
+
+          info.innerHTML = `
+            <input class="form-control mb-1 titulo-edit" value="${h5.textContent}">
+            <input class="form-control mb-1 anio-edit" value="${anioVal}">
+            <input class="form-control mb-1 medio-edit" value="${medioVal}">
+            <input class="form-control mb-1 artistas-edit" value="${artistasVal}">
+            <textarea class="form-control mb-1 descripcion-edit">${descripcionVal}</textarea>
+          `;
+          btnEditarAlbum.textContent = 'Guardar';
+          btnEditarAlbum.classList.replace('btn-warning', 'btn-success');
+          info.classList.add('editando');
+        } else {
+          const tituloNew = info.querySelector('.titulo-edit').value;
+          const anioNew = info.querySelector('.anio-edit').value;
+          const medioNew = info.querySelector('.medio-edit').value;
+          const artistasNew = info.querySelector('.artistas-edit').value;
+          const descripcionNew = info.querySelector('.descripcion-edit').value;
+
+          info.innerHTML = `
+            <h5>${tituloNew}</h5>
+            <p><strong>Año:</strong> ${anioNew} | <strong>Medio:</strong> ${medioNew}</p>
+            <p><strong>Artistas:</strong> ${artistasNew}</p>
+            <p><strong>Descripción:</strong> ${descripcionNew}</p>
+          `;
+          btnEditarAlbum.textContent = 'Editar Álbum';
+          btnEditarAlbum.classList.replace('btn-success', 'btn-warning');
+          info.classList.remove('editando');
+        }
+      });
+
+      formCancion.addEventListener('submit', e => {
+        e.preventDefault();
+        const titulo = formCancion.querySelector('.titulo').value.trim();
+        const interprete = formCancion.querySelector('.interprete').value.trim();
+        const duracion = formCancion.querySelector('.duracion').value.trim();
+
+        if (titulo && interprete && duracion) {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `
+            <span><strong>${titulo}</strong> - ${interprete} (${duracion})</span>
+            <div>
+              <button class="btn btn-sm btn-warning me-2">Editar</button>
+              <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </div>
+          `;
+
+          const btnEditar = li.querySelector('.btn-warning');
+          const btnEliminar = li.querySelector('.btn-outline-danger');
+
+          btnEditar.addEventListener('click', () => {
+            if (!li.classList.contains('editando')) {
+              const [tit, resto] = li.querySelector('span').textContent.split(' - ');
+              const [intp, dur] = resto.split(' (');
+              const durClean = dur.replace(')', '');
+
+              li.querySelector('span').innerHTML = `
+                <input value="${tit.trim()}" class="form-control form-control-sm d-inline-block" style="width: 120px;">
+                <input value="${intp.trim()}" class="form-control form-control-sm d-inline-block" style="width: 120px;">
+                <input value="${durClean.trim()}" class="form-control form-control-sm d-inline-block" style="width: 90px;">
+              `;
+              btnEditar.textContent = 'Guardar';
+              btnEditar.classList.replace('btn-warning', 'btn-primary');
+              li.classList.add('editando');
+            } else {
+              const inputs = li.querySelectorAll('input');
+              const nuevoTitulo = inputs[0].value.trim();
+              const nuevoInt = inputs[1].value.trim();
+              const nuevaDur = inputs[2].value.trim();
+
+              li.querySelector('span').innerHTML = `<strong>${nuevoTitulo}</strong> - ${nuevoInt} (${nuevaDur})`;
+              btnEditar.textContent = 'Editar';
+              btnEditar.classList.replace('btn-primary', 'btn-warning');
+              li.classList.remove('editando');
+            }
+          });
+
+          btnEliminar.addEventListener('click', () => li.remove());
+
+          listaCanciones.appendChild(li);
+          formCancion.reset();
+        }
+      });
+
+      contenedor.appendChild(col);
+    }
+  </script>
+<footer class="bg-dark text-white mt-5 py-4">
+  <div class="container text-center">
+    <p class="mb-1"><strong>Gestión de Álbumes y Canciones</strong><img src="./img/logo.png" alt="" height="70px"></p>
+    <p class="mb-1">Melomanos.net</p>
+    <p class="mb-0">&copy; <span id="year"></span> Todos los derechos reservados.</p>
+  </div>
+</footer>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
