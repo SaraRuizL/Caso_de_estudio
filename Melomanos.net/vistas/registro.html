@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crear Cuenta - Melomanos.net</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/estilos.css">
+  <style>
+    .registro-image {
+      max-width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .card-registro {
+      max-width: 1000px;
+      margin: 40px auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 10px;
+    }
+    .form-container {
+      padding: 2rem;
+    }
+    footer {
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <a class="navbar-brand" href="#"><img src="./img/logo.png" alt="" height="100px">Melomanos.net - 📝 Registro</a>
+  </nav>
+  <main class="container card-registro bg-white">
+    <div class="row g-0 align-items-center">
+      <div class="col-md-6 p-3">
+        <img src="./img/imagen registro.jpg" alt="Imagen de fondo" class="registro-image w-100 h-100">
+      </div>
+      <div class="col-md-6 form-container">
+        <h3 class="text-center mb-4">Crear Cuenta</h3>
+        <form id="form-registro">
+          <div class="mb-3">
+            <label for="registro-usuario" class="form-label">Nombre de Usuario</label>
+            <input type="text" class="form-control" id="registro-usuario" required>
+          </div>
+          <div class="mb-3">
+            <label for="registro-password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="registro-password" required>
+          </div>
+          <div class="mb-3">
+            <label for="registro-confirmar" class="form-label">Confirmar Contraseña</label>
+            <input type="password" class="form-control" id="registro-confirmar" required>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success">Crear Cuenta</button>
+          </div>
+        </form>
+
+        <p class="mt-4 text-center">¿Ya tienes una cuenta?</p>
+        <a href="./inicio de sesion.html" class="btn btn-outline-primary w-100">Iniciar Sesión</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-dark text-white py-4 mt-auto">
+    <div class="container text-center">
+      <p class="mb-1"><strong>Melomanos</strong><img src="./img/logo.png" alt="" height="70px"></p>
+      <p class="mb-1">Melomanos.net</p>
+      <p class="mb-0">&copy; <span id="year"></span> Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    document.getElementById('form-registro').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const usuario = document.getElementById('registro-usuario').value.trim();
+      const pass = document.getElementById('registro-password').value.trim();
+      const confirmar = document.getElementById('registro-confirmar').value.trim();
+
+      if (!usuario || !pass || !confirmar) {
+        alert('Por favor, completa todos los campos.');
+        return;
+      }
+
+      if (pass !== confirmar) {
+        alert('Las contraseñas no coinciden.');
+        return;
+      }
+
+      alert(`¡Cuenta creada para ${usuario}!`);
+      document.getElementById('form-registro').reset();
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
